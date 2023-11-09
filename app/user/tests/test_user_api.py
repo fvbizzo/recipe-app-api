@@ -22,7 +22,7 @@ def create_user(**params):
 class PublicUserApiTests(TestCase):
     """Test the public features of the user API."""
 
-    def setUo(self):
+    def setUp(self):
         self.client = APIClient()
 
     def test_create_user_success(self):
@@ -52,7 +52,7 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short_error(self):
-        """Test an error is returnded if password less than 5 chars."""
+        """Test an error is returned if password less than 5 chars."""
         payload = {
             'email': 'test@example.com',
             'password': 'pw',
@@ -95,7 +95,7 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_token_blank_password(self):
-        """Test posting a blank password returns error."""
+        """Test posting a blank password returns an error."""
         payload = {'email': 'test@example.com', 'password': ''}
         res = self.client.post(TOKEN_URL, payload)
 
@@ -103,7 +103,7 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_retrieve_user_unauthorized(self):
-        """Test authentication is required fro users."""
+        """Test authentication is required for users."""
         res = self.client.get(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -145,5 +145,5 @@ class PrivateUserApiTests(TestCase):
 
         self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload['name'])
-        self.assertEqual(self.user.check_password(payload['password']))
-        self.assertEqual(res.statu_code, status.HTTP_200_OK)
+        self.assertTrue(self.user.check_password(payload['password']))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
